@@ -30,22 +30,18 @@ def do_deploy(archive_path):
     if exists(archive_path) is False:
         return False
 
-    temp = archive_path.split('/')
-    temp0 = temp[1].split(".")
-    f = temp0[0]
-
     try:
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]
+        path = "/data/web_static/releases/"
         put(archive_path, '/tmp/')
-        run("sudo mkdir -p /data/web_static/releases/" + f + "/")
-        run("sudo tar -xzf /tmp/" + f + ".tgz" +
-            " -C /data/web_static/releases/" + f + "/")
-        run("sudo rm /tmp/" + f + ".tgz")
-        run("sudo mv /data/web_static/releases/" + f +
-            "/web_static/* /data/web_static/releases/" + f + "/")
-        run("sudo rm -rf /data/web_static/releases/" + f + "/web_static")
-        run("sudo rm -rf /data/web_static/current")
-        run("sudo ln -s /data/web_static/releases/" + f +
-            "/ /data/web_static/current")
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('rm /tmp/{}'.format(file_n))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
     except:
         return False
